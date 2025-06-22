@@ -8,7 +8,7 @@ from sqlalchemy import BigInteger
 import pandas as pd
 import streamlit as st
 from PIL import Image
-import pymongo
+import pymongo 
 
 
 # Define the Base class for declarative table definitions
@@ -97,31 +97,31 @@ def ch_details(channel_id): #function that get channel details
     }
     return channel_details
 
-def v_details(channel_id): #function to get video details
+
+
+def v_details(channel_id):  # ← here is your replaced block
     video_ids = []
     video_details = []
-    # Get upload id from channel id
+    # Get upload id …
     request = youtube.channels().list(
         part="snippet,contentDetails,statistics",
         id=channel_id
     )
-    response = request.execute()  
+    response = request.execute()
     upload_id = response['items'][0]['contentDetails']['relatedPlaylists']['uploads']
 
-    # Get content details of all the videos
+    # build the full list of video_ids
     request = youtube.playlistItems().list(
         part="contentDetails",
         maxResults=50,
         playlistId=upload_id
     )
-
     while True:
-        response = request.execute()    
+        response = request.execute()
         for item in response['items']:
             video_ids.append(item['contentDetails']['videoId'])
         if "nextPageToken" not in response:
             break
-
         request = youtube.playlistItems().list(
             part="contentDetails",
             maxResults=50,
@@ -129,6 +129,7 @@ def v_details(channel_id): #function to get video details
             pageToken=response["nextPageToken"]
         )
 
+    # now loop through IDs and batch‐fetch details
     for video_id in video_ids:
         request = youtube.videos().list(
             part="snippet,contentDetails,statistics",
@@ -285,7 +286,7 @@ with st.sidebar:
     st.caption("API Integration")
     st.caption("Data Management using MongoDB and SQL")
 
-img = Image.open(r"C:\Users\HP\OneDrive\Desktop\srivathsan\Youtube\YouTube-Data-Harvesting-and-Warehousing-using-SQL-and-Streamlit\download (1).png")
+img = Image.open("download (1).png")
 st.image(img,width=250)
 channel_id=st.text_input("Enter the channel ID")
 
